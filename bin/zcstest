@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Pod::Usage;
+use ZCS::API;
+use ZCS::Config;
+use ZCS::API::Zimbra;
+
+=head1 NAME
+
+zcstest - zcstest ZCS::API testing
+
+=head1 SYNOPSIS
+
+  zcstest -action <method> ...
+
+=head1 OPTIONS
+
+=over
+
+=item action
+
+=item protocol
+
+=item config
+
+=item help
+
+=item man
+
+=item debug
+
+=item warn
+
+=item retry
+
+=back
+
+=head1 DESCRIPTION
+
+Used to call any ZCS::API::Zimbra method passed to action any additional
+arguments will be passed as parameters to the method call.
+
+=cut
+
+my %Opt;
+GetOptions(
+    \%Opt,      "config:s",   "help",  "man",
+    "action:s", "protocol:s", "debug", "warn",
+    "retry:i"
+) or pod2usage( -verbose => 99, -sections => "SYNOPSIS", -exitval => 1 );
+
+pod2usage( -verbose => 1 ) if ( $Opt{help} );
+pod2usage( -verbose => 2 ) if ( $Opt{man} );
+
+my @err;
+if ( !defined $Opt{action} ) {
+    push( @err, "-action must be specified" );
+}
+
+pod2usage( -exitval => 2, -msg => "$0: @err\n" ) if (@err);
+
+unless ( $Opt{config} ) {
+    if ( exists( $ENV{ZCS_CONFIG} ) ) {
+        $Opt{config} = $ENV{ZCS_CONFIG};
+    }
+    else {
+        pod2usage(
+            -exitval => 1,
+            -msg     => "Must specify config file or env ZCS_CONFIG"
+        );
+    }
+}
+
+my $config = ZCS::Config->new( file => $Opt{config} );
+unless ($config) {
+    pod2usage( -exitval => 1, -msg => ZCS::Config->error );
+}
+
+my $zcs = ZCS::API->new(
+    conf => {
+        SOAPURI  => $config->get("URI"),
+        SOAPUser => $config->get("User"),
+        SOAPPass => $config->get("Pass")
+    }
+);
+unless ($zcs) {
+    pod2usage( -exitval => 1, -msg => ZCS::API->error );
+}
+$zcs->debug(1)               if ( $Opt{debug} );
+$zcs->warn(1)                if ( $Opt{warn} );
+$zcs->retry( $Opt{retry} )   if ( $Opt{retry} );
+$zcs->type( $Opt{protocol} ) if ( $Opt{protocol} );
+
+if ( ZCS::API::Zimbra->can( $Opt{action} ) ) {
+    my $r;
+    my $method = $Opt{action};
+    unless ( $r = $zcs->$method(@ARGV) ) {
+        die $zcs->error . "\n";
+    }
+
+#print "Auth Token: ".$zcs->auth->{context}{authToken}{_content}."\n";
+#print "Delegate Auth Token: ".$zcs->delegateauth($ARGV[0])->{context}{authToken}{_content}."\n";
+    use Data::Dumper;
+    print Dumper($r);
+}
+elsif ( ZCS::API->can( $Opt{action} ) ) {
+    my $method = $Opt{action};
+    if ( my $r = $zcs->$method(@ARGV) ) {
+        print $r. "\n";
+    }
+    else {
+        die $zcs->error . "\n";
+    }
+}
+else {
+    pod2usage( -exitval => 1, -msg => $Opt{action} . " not supported" );
+}
+

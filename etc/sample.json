@@ -1,0 +1,5 @@
+{
+   "URI"  : "https://z8.example.com:7071/service/admin/soap",
+   "User" : "admin@z8.example.com",
+   "Pass" : "AdminPasswordGoesHere"
+}
