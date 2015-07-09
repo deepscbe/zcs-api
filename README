@@ -1,3 +1,43 @@
+ZCS-API
+
+ZCS::API - perl module for accessing Zimbra SOAP API
+
+This is a very early release.  It needs lots of love and testing and
+is not yet in CPAN, sorry!
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc ZCS::API
+
+You can also look for information at:
+
+    RT, CPAN's request tracker (report bugs here)
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=ZCS-API
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/ZCS-API
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/ZCS-API
+
+    Search CPAN
+        http://search.cpan.org/dist/ZCS-API/
+
+
+LICENSE AND COPYRIGHT
+
 Copyright (C) 2015 Phil Pearl, Matthew McGillis.
 
 This program is free software; you can redistribute it and/or modify it
@@ -35,3 +75,4 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
